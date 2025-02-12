@@ -2,7 +2,7 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 # More info on Python, GitHub Actions, and Azure Functions: https://aka.ms/python-webapps-actions
 
-name: Build and deploy Python project to Azure Function App - adf-file-trigger
+name: Build and Deploy Python Project to Azure Function App - adf-file-trigger
 
 on:
   push:
@@ -11,38 +11,38 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
-  PYTHON_VERSION: '3.11' # set this to the python version to use (supports 3.6, 3.7, 3.8)
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'  # Path to the function app project
+  PYTHON_VERSION: '3.11'  # Python version to use
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read  # Required for actions/checkout
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Python version
+      - name: Setup Python Version
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Create and start virtual environment
+      - name: Create and Start Virtual Environment
         run: |
           python -m venv venv
           source venv/bin/activate
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: pip install -r requirements.txt
 
       # Optional: Add step to run tests here
 
-      - name: Zip artifact for deployment
+      - name: Zip Artifact for Deployment
         run: zip release.zip ./* -r
 
-      - name: Upload artifact for deployment job
+      - name: Upload Artifact for Deployment Job
         uses: actions/upload-artifact@v4
         with:
           name: python-app
@@ -54,24 +54,24 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write  # Required for requesting the JWT
+      contents: read  # Required for actions/checkout
 
     steps:
-      - name: Download artifact from build job
+      - name: Download Artifact from Build Job
         uses: actions/download-artifact@v4
         with:
           name: python-app
 
-      - name: Unzip artifact for deployment
+      - name: Unzip Artifact for Deployment
         run: unzip release.zip     
-        
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_85C60BEA53664C42836B1970C475B795 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_059273867EC044018ED24EA6C25CAEC8 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_67376973091B42CCB70AA476BA391C49 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
 
       - name: 'Deploy to Azure Functions'
         uses: Azure/functions-action@v1
@@ -80,4 +80,3 @@ jobs:
           app-name: 'adf-file-trigger'
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          
