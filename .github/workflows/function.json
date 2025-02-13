@@ -1,9 +1,9 @@
 {
-    "bindings": [
-        {
-            "type": "eventGridTrigger",
-            "direction": "in",
-            "name": "azeventgrid"
-        }
-    ]
+  "bindings": [
+    {
+      "type": "eventGridTrigger",
+      "name": "event",
+      "direction": "in"
+    }
+  ]
 }
