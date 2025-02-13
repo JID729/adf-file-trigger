@@ -1,8 +1,5 @@
 import logging
 import azure.functions as func
 
-app = func.FunctionApp()
-
-@app.event_grid_trigger(arg_name="azeventgrid")
-def EventGridTriggerBlob(azeventgrid: func.EventGridEvent):
-    logging.info('Python EventGrid trigger processed an event')
+def main(event: func.EventGridEvent):
+    logging.info('Received Event Grid event: %s', event.get_json())
